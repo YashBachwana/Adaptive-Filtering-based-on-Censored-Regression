@@ -21,11 +21,11 @@ for itr=1:iteration
     
     for i=1:length(input)
         sys_tap=[input(i) sys_tap(1:end-1)']';
-        % if i < 2500
-        %     sys_opt_cap = cdf('Normal',sys_tap'*sys_w,0,1) * sys_tap' * sys_w + pdf('Normal',sys_tap'*sys_w,0,1) + noise(i);
-        % else 
-        %     sys_opt_cap = sys_tap' * sys_w + noise(i) ;
-        % end 
+        if i < 2500
+            sys_opt_cap = cdf('Normal',sys_tap'*sys_w,0,1) * sys_tap' * sys_w + pdf('Normal',sys_tap'*sys_w,0,1) + noise(i);
+        else 
+            sys_opt_cap = sys_tap' * sys_w + noise(i) ;
+        end 
         % sys_opt_cap = cdf('Normal',sys_tap'*sys_w,0,1) * sys_tap' * sys_w + pdf('Normal',sys_tap'*sys_w,0,1) + noise(i);
         % sys_opt_cap = sys_tap' * sys_w + noise(i) ;
         
