@@ -2,7 +2,7 @@ clc;
 clear all;
 close all;
 
-iteration = 100 ;
+iteration = 1000 ;
 g = 0.1 ;
 beta = 0.4 ;
 alpha = 20 ; 
@@ -12,9 +12,9 @@ for itr=1:iteration
 
     itr
     input=rand(1,5000)-0.5;
-    noise=awgn(input,40)-input;
+    noise=awgn(input,30)-input;
 
-    sys_w=[0.1 0.5 0.1]';
+    sys_w=[0.2 0.4 0.3]';
 
     sigma = 1 ;
     gamma = zeros(1,3)';
@@ -53,7 +53,7 @@ for itr=1:iteration
 
 err_plot(itr,:)=err.^2;
 end
-plot(10*log10(mean(err_plot)),'k'); hold on ;
+plot(10*log10(mean(err_plot)),'b'); hold on ;
 
 
 
@@ -62,16 +62,16 @@ plot(10*log10(mean(err_plot)),'k'); hold on ;
 
 
 
-iteration = 100 ;
+iteration = 1000 ;
 g = 0.1 ;
 % System Identification
 for itr=1:iteration
 
     itr
     input=rand(1,5000)-0.5;
-    noise=awgn(input,40)-input;
+    noise=awgn(input,30)-input;
     
-    sys_w=[0.1 0.5 0.1]';
+    sys_w=[0.2 0.4 0.3]';
 
     sigma = 1 ;
     gamma = zeros(1,3)';
@@ -121,6 +121,53 @@ plot(10*log10(mean(err_plot)),'r'); hold on ;
 
 
 
+iteration = 1000 ;
+g = 0.1 ;
+% System Identification
+for itr=1:iteration
+
+    itr
+    input=rand(1,5000)-0.5;
+    noise=awgn(input,30)-input;
+    
+    sys_w=[0.2 0.4 0.3]';
+
+    sigma = 1 ;
+    gamma = zeros(1,3)';
+    sys_tap=zeros(1,3)';
+    model_w=zeros(1,3)';
+    mu = 0.05 ;
+    
+    for i=1:length(input)
+        sys_tap=[input(i) sys_tap(1:end-1)']';
+
+        sys_opt_cap = cdf('Normal',sys_tap'*sys_w,0,1) * sys_tap' * sys_w + pdf('Normal',sys_tap'*sys_w,0,1) + noise(i);
+        % if sys_opt > 0
+        %     sys_opt_cap = sys_opt ; 
+        % else 
+        %     sys_opt_cap = 0 ;
+        % end 
+        
+        mdl_opt = cdf('Normal',sys_tap'*gamma,0,sigma) * sys_tap' * model_w + sigma * pdf('Normal',sys_tap'*gamma,0,sigma);
+        
+        err(i) = sys_opt_cap - mdl_opt;
+        
+        if sys_opt_cap > 0 
+            lambda = 1 ;
+        else 
+            lambda = 0 ;
+        end 
+        
+        % n_fact = 1 / ((cdf('Normal',sys_tap'*gamma,0,sigma) ^ 2) * (g + sys_tap' * sys_tap)) ;
+        n_fact = 1 ;
+        gamma = gamma + n_fact * mu * lambda * psi(sys_tap'*gamma,0,sigma) * sys_tap - mu * (1 - lambda) * psi(- sys_tap'*gamma,0,sigma) * sys_tap ;
+        sigma = sigma + n_fact * mu * pdf('Normal',sys_tap'*gamma,0,sigma) * err(i) ;
+        model_w = model_w + (n_fact * mu * cdf('Normal',sys_tap'*gamma,0,sigma) * sys_tap' * err(i))';
+    end
+
+err_plot(itr,:)=err.^2;
+end
+plot(10*log10(mean(err_plot)),'k'); hold on ;
 
 
 
@@ -138,15 +185,14 @@ plot(10*log10(mean(err_plot)),'r'); hold on ;
 
 
 
-
-mu = 0.01 ; % Update rule coefficient 
+mu = 0.05 ; % Update rule coefficient 
 N = 3 ;
 input_length = 5000 ;
-w_sys=[0.1 0.5 0.1] ;
-for iter = 1 : 100
+w_sys=[0.2 0.4 0.3] ;
+for iter = 1 : 1000
 
     input = rand(1,5000) - 0.5; % Random signal
-    system_noise = awgn(input,40)-input ; % White Gaussian Noise 
+    system_noise = awgn(input,30)-input ; % White Gaussian Noise 
     input = [zeros(1,N - 1) input] ; 
     w_LMS = zeros(1,N) ;
     X = zeros(1,N) ;
@@ -167,7 +213,7 @@ for iter = 1 : 100
 end 
 
 plot(10 * log10(mean(err_ensemble)),'g') ; hold on ; 
-legend('CR-VSS-NLMS','CR-NLMS','LMS')
+legend('CR-VSS-NLMS','CR-NLMS','CR-LMS','LMS')
 
 
 

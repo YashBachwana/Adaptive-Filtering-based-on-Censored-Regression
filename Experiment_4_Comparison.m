@@ -62,7 +62,7 @@ for iter = 1 : 1000
         else 
             sys_opt_cap = sys_tap * w_sys' + system_noise(i) ;
         end 
-        % d = cdf('Normal',sys_tap*w_sys',0,1) * sys_tap * w_sys' + pdf('Normal',sys_tap*w_sys',0,1) + system_noise(i);
+        % sys_opt_cap = cdf('Normal',sys_tap*w_sys',0,1) * sys_tap * w_sys' + pdf('Normal',sys_tap*w_sys',0,1) + system_noise(i);
         sys_out = w_LMS * sys_tap' ; % System Output
         error = sys_opt_cap - sys_out ; % Error 
 
@@ -104,14 +104,13 @@ for itr=1:iteration
     
     sys_w=[0.1 0.5 0.1]';
     sigma = 1 ;
-    lambda = 0.5 ;
     alpha = 0 ;
     sys_tap=zeros(1,3)';
 
     model_w1=zeros(1,3)';
     model_w2=zeros(1,3)';
 
-    mu = 0.5 ;
+    mu = 0.05 ;
     
     for i=1:length(input)
         sys_tap=[input(i) sys_tap(1:end-1)']';
@@ -137,7 +136,7 @@ for itr=1:iteration
         
         model_w1 = model_w1 + (mu * cdf('Normal',sys_tap'*model_w1,0,sigma) * sys_tap' * err1)';
         model_w2 = model_w2 + (mu * err2 * sys_tap) ;
-        alpha = alpha + 100 * err(i) * lambda * (1 - lambda) * (y1 - y2) ;
+        alpha = alpha + 30 * err(i) * lambda * (1 - lambda) * (y1 - y2) ;
     end
 
 err_plot(itr,:)=err.^2;

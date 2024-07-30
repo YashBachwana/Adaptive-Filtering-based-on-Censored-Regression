@@ -2,7 +2,7 @@ clc;
 
 clear all;
 close all;
-iteration = 100 ;
+iteration = 1000 ;
 g = 0.1 ;
 % System Identification
 for itr=1:iteration
@@ -66,7 +66,7 @@ plot(10*log10(mean(err_plot)),'r'); hold on ;
 
 
 clear;
-iteration = 100 ;
+iteration = 1000 ;
 % System Identification
 for itr=1:iteration
 
@@ -129,7 +129,7 @@ mu = 0.01 ; % Update rule coefficient
 N = 3 ;
 input_length = 5000 ;
 w_sys=[0.1 0.5 0.1] ;
-for iter = 1 : 100
+for iter = 1 : 1000
 
     input = rand(1,5000) - 0.5; % Random signal
     system_noise = awgn(input,35)-input ; % White Gaussian Noise 
@@ -139,7 +139,7 @@ for iter = 1 : 100
 
     iter
     for i = 1 : input_length 
-            
+
         if i == 2500
             sys_w = [0.5 0.4 0.3] ;
         else 

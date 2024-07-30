@@ -18,7 +18,7 @@ for itr=1:iteration
     model_w1=zeros(1,3)';
     model_w2=zeros(1,3)';
 
-    mu = 0.1 ;
+    mu = 0.01 ;
     
     for i=1:length(input)
         sys_tap=[input(i) sys_tap(1:end-1)']';
